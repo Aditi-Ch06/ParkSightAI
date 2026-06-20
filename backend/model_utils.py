@@ -100,7 +100,10 @@ def smart_enforcement_planner(
     station_junctions = (
         model_df[
             model_df['police_station']
-            == police_station
+            .str.strip()
+            .str.lower()
+            ==
+            police_station.strip().lower()
         ]
         [['junction_name']]
         .drop_duplicates()
