@@ -75,3 +75,10 @@ def deployment(
     return result.to_dict(
         orient="records"
     )
+    
+@app.get("/")
+def home():
+    return {
+        "message": "ParkSight AI API is live",
+        "docs": "/docs"
+    }
