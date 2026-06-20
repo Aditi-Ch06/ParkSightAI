@@ -28,7 +28,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 from backend.model_utils import (
     predict_hotspot,
     forecast_hotspots,
-    smart_enforcement_planner
+    smart_enforcement_planner,
+    get_station_list
 )
 
 @app.post("/risk-score")
@@ -94,10 +95,5 @@ def home():
     }
     
 @app.get("/stations")
-def get_stations():
-    return sorted(
-        model_df["police_station"]
-        .dropna()
-        .unique()
-        .tolist()
-    )
+def stations():
+    return get_station_list()

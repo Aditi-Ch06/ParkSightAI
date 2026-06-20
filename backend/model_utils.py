@@ -171,3 +171,12 @@ def smart_enforcement_planner(
         )
         .head(top_n)
     )
+    
+def get_station_list():
+
+    return sorted(
+        model_df["police_station"]
+        .dropna()
+        .unique()
+        .tolist()
+    )
