@@ -93,3 +93,11 @@ def home():
         "docs": "/docs"
     }
     
+@app.get("/stations")
+def get_stations():
+    return sorted(
+        model_df["police_station"]
+        .dropna()
+        .unique()
+        .tolist()
+    )
