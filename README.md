@@ -210,7 +210,7 @@ npm run dev
 Frontend available at:
 
 ```text
-http://localhost:5173
+http://localhost:3000/
 ```
 
 ---
