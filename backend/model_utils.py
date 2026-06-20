@@ -109,6 +109,14 @@ def smart_enforcement_planner(
         .drop_duplicates()
     )
     
+    actual_station = (
+        model_df[
+            model_df["police_station"].str.strip().str.lower()
+            == police_station.strip().lower()
+        ]["police_station"]
+        .iloc[0]
+    )
+    
     recommendations = []
     
     for junction in station_junctions['junction_name']:
@@ -120,7 +128,7 @@ def smart_enforcement_planner(
             
             pred = predict_hotspot(
                 junction,
-                police_station,
+                actual_station,
                 hour,
                 weekday,
                 month
