@@ -82,3 +82,22 @@ def home():
         "message": "ParkSight AI API is live",
         "docs": "/docs"
     }
+    
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+origins = [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "https://your-frontend-domain.vercel.app"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
