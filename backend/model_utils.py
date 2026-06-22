@@ -1,3 +1,4 @@
+from functools import lru_cache
 import pandas as pd
 import joblib
 
@@ -12,6 +13,13 @@ model = joblib.load(
 model_df = pd.read_csv(
     BASE_DIR / "data" / "model_data.csv"
 )
+
+model_df["station_clean"] = (
+    model_df["police_station"]
+    .str.strip()
+    .str.lower()
+)
+
 def predict_hotspot(
     junction,
     police_station,
@@ -31,6 +39,7 @@ def predict_hotspot(
 
     return float(prediction)
 
+@lru_cache(maxsize=100)
 def forecast_hotspots(
     hour,
     weekday,
@@ -47,24 +56,23 @@ def forecast_hotspots(
         .drop_duplicates()
     )
     
-    for _, row in junction_station_map.iterrows():
-        
-        junction = row['junction_name']
-        station = row['police_station']
-        
-        pred = predict_hotspot(
-            junction=junction,
-            police_station=station,
-            hour=hour,
-            weekday=weekday,
-            month=month
-        )
-        
-        predictions.append([
-            junction,
-            station,
-            pred
-        ])
+    forecast_df = junction_station_map.copy()
+
+    forecast_df["hour"] = hour
+    forecast_df["weekday"] = weekday
+    forecast_df["month"] = month
+
+    forecast_df["predicted_violations"] = model.predict(
+        forecast_df[
+            [
+                "junction_name",
+                "police_station",
+                "hour",
+                "weekday",
+                "month"
+            ]
+        ]
+    )
     
     forecast_df = pd.DataFrame(
         predictions,
@@ -90,6 +98,7 @@ def forecast_hotspots(
         .head(top_n)
     )
     
+@lru_cache(maxsize=100)
 def smart_enforcement_planner(
     police_station,
     weekday,
@@ -99,9 +108,7 @@ def smart_enforcement_planner(
     
     station_junctions = (
         model_df[
-            model_df['police_station']
-            .str.strip()
-            .str.lower()
+            model_df['station_clean']
             ==
             police_station.strip().lower()
         ]
@@ -111,7 +118,7 @@ def smart_enforcement_planner(
     
     actual_station = (
         model_df[
-            model_df["police_station"].str.strip().str.lower()
+            model_df["station_clean"]
             == police_station.strip().lower()
         ]["police_station"]
         .iloc[0]
@@ -119,31 +126,38 @@ def smart_enforcement_planner(
     
     recommendations = []
     
-    for junction in station_junctions['junction_name']:
-        
-        best_hour = None
-        best_prediction = -1
-        
+    samples = []
+
+    for junction in station_junctions["junction_name"]:
         for hour in range(24):
-            
-            pred = predict_hotspot(
+            samples.append([
                 junction,
                 actual_station,
                 hour,
                 weekday,
                 month
-            )
-            
-            if pred > best_prediction:
-                
-                best_prediction = pred
-                best_hour = hour
-        
-        recommendations.append([
-            junction,
-            best_hour,
-            best_prediction
-        ])
+            ])
+
+    sample_df = pd.DataFrame(
+        samples,
+        columns=[
+            "junction_name",
+            "police_station",
+            "hour",
+            "weekday",
+            "month"
+        ]
+    )
+
+    sample_df["prediction"] = model.predict(sample_df)
+    
+    best_rows = (
+        sample_df
+        .sort_values("prediction", ascending=False)
+        .groupby("junction_name")
+        .first()
+        .reset_index()
+    )
     
     rec_df = pd.DataFrame(
         recommendations,
@@ -188,3 +202,4 @@ def get_station_list():
         .unique()
         .tolist()
     )
+    
