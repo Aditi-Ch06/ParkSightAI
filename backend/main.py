@@ -32,6 +32,10 @@ from backend.model_utils import (
     get_station_list
 )
 
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
 @app.post("/risk-score")
 def risk_score(
     junction_name:str,
