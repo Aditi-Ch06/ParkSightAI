@@ -98,16 +98,3 @@ def home():
 def stations():
     return get_station_list()
 
-@app.get("/debug-station")
-def debug_station(police_station: str):
-
-    rows = model_df[
-        model_df["station_clean"]
-        == police_station.strip().lower()
-    ]
-
-    return {
-        "input": police_station,
-        "matched_rows": len(rows),
-        "sample": rows.head().to_dict(orient="records")
-    }

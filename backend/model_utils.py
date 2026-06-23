@@ -73,15 +73,6 @@ def forecast_hotspots(
             ]
         ]
     )
-    
-    forecast_df = pd.DataFrame(
-        predictions,
-        columns=[
-            'junction_name',
-            'police_station',
-            'predicted_violations'
-        ]
-    )
 
     forecast_df['risk_score'] = (
         forecast_df['predicted_violations']
@@ -159,14 +150,20 @@ def smart_enforcement_planner(
         .reset_index()
     )
     
-    rec_df = pd.DataFrame(
-        recommendations,
-        columns=[
-            'junction_name',
-            'recommended_hour',
-            'predicted_violations'
-        ]
+    rec_df = best_rows.rename(
+        columns={
+            "hour": "recommended_hour",
+            "prediction": "predicted_violations"
+        }
     )
+
+    rec_df = rec_df[
+        [
+            "junction_name",
+            "recommended_hour",
+            "predicted_violations"
+        ]
+    ]
 
     rec_df['risk_score'] = (
         rec_df['predicted_violations']
