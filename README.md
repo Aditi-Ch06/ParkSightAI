@@ -8,6 +8,18 @@ The platform transforms historical parking violation records into actionable int
 
 ---
 
+## 🌐 Live Demo
+
+Frontend:
+
+[https://park-sight-ai.vercel.app/](https://park-sight-ai.vercel.app/)
+
+Backend API:
+
+[https://parksightai.onrender.com/](https://parksightai.onrender.com/docs)
+
+---
+
 ## 🌟 Problem Statement
 
 Illegal and unregulated parking contributes significantly to urban traffic congestion. Current enforcement approaches are often reactive, leading to inefficient utilization of traffic personnel and delayed interventions.
@@ -212,18 +224,6 @@ Frontend available at:
 ```text
 http://localhost:3000/
 ```
-
----
-
-## 🌐 Live Demo
-
-Frontend:
-
-[https://park-sight-ai.vercel.app/](https://park-sight-ai.vercel.app/)
-
-Backend API:
-
-[https://parksightai.onrender.com/](https://parksightai.onrender.com/docs)
 
 ---
 
